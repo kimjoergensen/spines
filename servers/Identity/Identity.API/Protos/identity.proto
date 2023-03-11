@@ -6,16 +6,13 @@ package Identity;
 
 // The greeting service definition.
 service Identity {
-  // Sends a greeting
-  rpc Greet (HelloRequest) returns (HelloReply);
+  rpc RegisterUser (RegisterUserRequest) returns (EmptyReply);
 }
 
-// The request message containing the user's name.
-message HelloRequest {
-  string name = 1;
+message RegisterUserRequest {
+  string email = 1;
+  string password = 2;
 }
 
-// The response message containing the greetings.
-message HelloReply {
-  string message = 1;
-}
+// Empty request or response
+message EmptyReply {}
