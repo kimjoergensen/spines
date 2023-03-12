@@ -1,4 +1,4 @@
-﻿namespace Spines.Shared.Mediator;
+﻿namespace Spines.Shared.Mediators;
 
 using System.Threading.Tasks;
 

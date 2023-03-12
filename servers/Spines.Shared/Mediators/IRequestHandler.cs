@@ -1,5 +1,4 @@
-﻿namespace Spines.Shared.Mediator;
-
+﻿namespace Spines.Shared.Mediators;
 public interface IRequestHandler<TRequest> where TRequest : IRequest
 {
     Task HandleAsync(TRequest request);

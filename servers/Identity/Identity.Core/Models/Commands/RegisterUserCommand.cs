@@ -1,6 +1,6 @@
 ﻿namespace Identity.Core.Models.Commands;
 
-using Spines.Shared.Mediator;
+using Spines.Shared.Mediators;
 
 public class RegisterUserCommand : IRequest
 {

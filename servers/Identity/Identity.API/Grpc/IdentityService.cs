@@ -6,7 +6,7 @@ using global::Identity.Core.Services.Interfaces;
 
 using Microsoft.AspNetCore.Authorization;
 
-//[Authorize]
+[Authorize]
 public class IdentityService : Identity.IdentityBase
 {
     private readonly ILogger<IdentityService> _logger;

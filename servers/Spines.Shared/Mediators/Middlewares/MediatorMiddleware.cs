@@ -1,11 +1,12 @@
-﻿namespace Spines.Shared.Mediator.Middleware;
+﻿namespace Spines.Shared.Mediators.Middlewares;
 
 using System.Reflection;
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
-using Spines.Shared.Mediator.Implementation;
+using Spines.Shared.Mediators;
+using Spines.Shared.Mediators.Implementations;
 
 public static class MediatorMiddleware
 {
@@ -38,7 +39,7 @@ public static class MediatorMiddleware
         foreach (var type in types)
         {
             var closedInterface = type.GetInterface(compareType.Name);
-            services.TryAddTransient(closedInterface!, type);
+            services.TryAddScoped(closedInterface!, type);
         }
     }
 }

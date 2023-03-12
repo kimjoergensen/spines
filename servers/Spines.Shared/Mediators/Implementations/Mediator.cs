@@ -1,7 +1,7 @@
-﻿namespace Spines.Shared.Mediator.Implementation;
+﻿namespace Spines.Shared.Mediators.Implementations;
 using Microsoft.Extensions.DependencyInjection;
 
-using Spines.Shared.Mediator;
+using Spines.Shared.Mediators;
 
 internal class Mediator : IMediator
 {
@@ -12,22 +12,23 @@ internal class Mediator : IMediator
         _serviceProvider = serviceProvider;
     }
 
-    public Task InvokeAsync(IRequest request)
+    public async Task InvokeAsync(IRequest request)
     {
+        using var scope = _serviceProvider.CreateScope();
         var handlerType = typeof(IRequestHandler<>)
             .MakeGenericType(request.GetType());
 
-        dynamic handler = _serviceProvider.GetRequiredService(handlerType);
-        return (Task)handler.HandleAsync((dynamic)request);
+        dynamic handler = scope.ServiceProvider.GetRequiredService(handlerType);
+        await (Task)handler.HandleAsync((dynamic)request);
     }
 
     public async Task<TResponse> InvokeAsync<TResponse>(IRequest request)
     {
+        using var scope = _serviceProvider.CreateScope();
         var handlerType = typeof(IRequestHandler<,>)
             .MakeGenericType(request.GetType(), typeof(TResponse));
 
-        dynamic handler = _serviceProvider.GetRequiredService(handlerType);
-        var result = await (Task<TResponse>)handler.HandleAsync((dynamic)request);
-        return result;
+        dynamic handler = scope.ServiceProvider.GetRequiredService(handlerType);
+        return await (Task<TResponse>)handler.HandleAsync((dynamic)request);
     }
 }

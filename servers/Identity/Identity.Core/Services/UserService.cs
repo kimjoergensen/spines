@@ -2,7 +2,7 @@
 using Identity.Core.Models.Commands;
 using Identity.Core.Services.Interfaces;
 
-using Spines.Shared.Mediator;
+using Spines.Shared.Mediators;
 
 public class UserService : IUserService
 {

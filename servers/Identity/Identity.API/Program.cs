@@ -8,10 +8,11 @@ using Identity.Core.Models;
 using Identity.Core.Services;
 using Identity.Core.Services.Interfaces;
 
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
-using Spines.Shared.Mediator.Middleware;
+using Spines.Shared.Mediators.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
 var coreAssembly = Assembly.GetAssembly(typeof(AssemblyReference))
@@ -55,8 +56,8 @@ builder.Services.Configure<IdentityOptions>(options =>
 #endregion
 
 #region Auth
-//builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme);
-//builder.Services.AddAuthorization();
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme);
+builder.Services.AddAuthorization();
 #endregion
 
 builder.Services.AddMediator(coreAssembly);
@@ -73,7 +74,7 @@ var app = builder.Build();
 app.UseRouting();
 
 app.UseAuthentication();
-//app.UseAuthorization();
+app.UseAuthorization();
 
 app.MapGrpcService<IdentityService>();
 app.MapGet("/", () => "Communication with gRPC endpoints must be made through a gRPC client. To learn how to create a client, visit: https://go.microsoft.com/fwlink/?linkid=2086909");
@@ -82,7 +83,8 @@ if (app.Environment.IsDevelopment())
 {
     app.MapGrpcReflectionService();
 
-    var context = app.Services.GetRequiredService<IdentityDbContext>();
+    using var scope = app.Services.CreateScope();
+    var context = scope.ServiceProvider.GetRequiredService<IdentityDbContext>();
     context.Database.Migrate();
 }
 
