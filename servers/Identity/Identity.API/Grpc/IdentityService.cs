@@ -1,8 +1,13 @@
 namespace Identity.API.Grpc;
 
+using System.Threading.Tasks;
+
 using global::Grpc.Core;
 using global::Identity.Core.Models.Commands;
+using global::Identity.Core.Models.Queries;
 using global::Identity.Core.Services.Interfaces;
+
+using Google.Protobuf.WellKnownTypes;
 
 using Microsoft.AspNetCore.Authorization;
 
@@ -19,10 +24,17 @@ public class IdentityService : Identity.IdentityBase
     }
 
     [AllowAnonymous]
-    public override async Task<EmptyReply> RegisterUser(RegisterUserRequest request, ServerCallContext context)
+    public override async Task<Empty> RegisterUser(RegisterUserRequest request, ServerCallContext context)
     {
-        _logger.LogInformation("Registering user with email {email}..", request.Email);
-        await _userService.RegisterUserAsync(new RegisterUserCommand(request.Email, request.Password));
-        return new EmptyReply();
+        await _userService.RegisterUserAsync(new RegisterUserCommand { Email = request.Email, Password = request.Password });
+        await _userService.LogInUserAsync(new LogInUserQuery { Username = request.Email, Password = request.Password });
+        return new Empty();
+    }
+
+    [AllowAnonymous]
+    public override async Task<Empty> Login(LoginRequest request, ServerCallContext context)
+    {
+        await _userService.LogInUserAsync(new LogInUserQuery { Username = request.Username, Password = request.Password });
+        return new Empty();
     }
 }

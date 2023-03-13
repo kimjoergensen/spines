@@ -56,7 +56,17 @@ builder.Services.Configure<IdentityOptions>(options =>
 #endregion
 
 #region Auth
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme);
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.SaveToken = true;
+        options.RequireHttpsMetadata = false;
+        options.TokenValidationParameters = new()
+        {
+            RoleClaimType = "role"
+        };
+    });
+
 builder.Services.AddAuthorization();
 #endregion
 
