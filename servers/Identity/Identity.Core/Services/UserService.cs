@@ -5,7 +5,6 @@ using System.Security.Claims;
 using Identity.Core.Exceptions;
 using Identity.Core.Models;
 using Identity.Core.Models.Commands;
-using Identity.Core.Models.Queries;
 using Identity.Core.Models.Requests;
 using Identity.Core.Services.Interfaces;
 
@@ -30,18 +29,6 @@ public class UserService : IUserService
     /// <param name="command">Mediator command for registering a new user.</param>
     /// <returns>Registered user's <see cref="ClaimsPrincipal"/>.</returns>
     /// <exception cref="UserRegistrationException"/>
-    public Task RegisterUserAsync(RegisterUserCommand command) =>
-        _mediator.InvokeAsync<ApplicationUser>(new RegisterUserRequest(command.Email, command.Password));
-
-    /// <summary>
-    /// Log in a user for the specified login credentials.
-    /// </summary>
-    /// <param name="query">Login credentials of the user.</param>
-    /// <returns><see cref="ApplicationUser"/></returns>
-    /// <exception cref="AuthenticateUserException"/>
-    public async Task<Token> AuthenticateUserAsync(AuthenticateUserQuery query)
-    {
-        var user = await _mediator.InvokeAsync<ApplicationUser>(new GetUserRequest(query.Username));
-        return await _mediator.InvokeAsync<Token>(new AuthenticateUserRequest(user, query.Password));
-    }
+    public async Task RegisterUserAsync(RegisterUserCommand command) =>
+        await _mediator.InvokeAsync<ApplicationUser>(new RegisterUserRequest { Email = command.Email, Password = command.Password });
 }

@@ -4,12 +4,6 @@ using Spines.Shared.Mediators;
 
 public class AuthenticateUserRequest : IRequest
 {
-    public ApplicationUser User { get; private set; }
-    public string Password { get; private set; }
-
-    public AuthenticateUserRequest(ApplicationUser user, string password)
-    {
-        User = user;
-        Password = password;
-    }
+    public required ApplicationUser User { get; init; }
+    public required string Password { get; init; }
 }

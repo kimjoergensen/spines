@@ -1,23 +1,14 @@
 syntax = "proto3";
 
-import "google/protobuf/empty.proto";
-
-option csharp_namespace = "Identity.API";
+option csharp_namespace = "Identity.API.Protos";
 
 package Identity;
 
 service Identity {
-  rpc RegisterUser (RegisterUserRequest) returns (google.protobuf.Empty);
-  rpc AuthenticateUser (AuthenticateUserRequest) returns (AuthenticationResponse);
-  rpc Test (google.protobuf.Empty) returns (google.protobuf.Empty);
+  rpc Authenticate (AuthenticationRequest) returns (AuthenticationResponse);
 }
 
-message RegisterUserRequest {
-  string email = 1;
-  string password = 2;
-}
-
-message AuthenticateUserRequest {
+message AuthenticationRequest {
   string username = 1;
   string password = 2;
 }

@@ -36,7 +36,7 @@ public class AuthenticateUserRequestHandler : IRequestHandler<AuthenticateUserRe
             throw new AuthenticateUserException(request.User);
 
         var token = GenerateToken(request.User);
-        return new Token(token, _options.ExpiresIn);
+        return new Token() { AccessToken = token, ExpiresIn = _options.ExpiresIn };
     }
 
     private string GenerateToken(ApplicationUser user)

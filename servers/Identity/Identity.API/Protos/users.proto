@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+import "google/protobuf/empty.proto";
+
+option csharp_namespace = "Identity.API.Protos";
+
+package Users;
+
+service Users {
+  rpc Register (RegisterUserRequest) returns (google.protobuf.Empty);
+}
+
+message RegisterUserRequest {
+  string email = 1;
+  string password = 2;
+}

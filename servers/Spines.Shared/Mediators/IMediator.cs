@@ -8,10 +8,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Spines.Shared.Mediators.Middlewares;
 
 /// <summary>
-/// <para>Mediator pattern implementation. Used to invoke commands and queries,
+/// <para>Mediator pattern implementation. Used to invoke <see cref="IRequest"/>,
 /// which will be automatically handled by registered <see cref="IRequestHandler{TRequest}"/> or <see cref="IRequestHandler{TRequest, TResponse}"/></para>
 /// 
-/// <para>Invoke <see cref="MediatorMiddleware.AddMediator(IServiceCollection, Assembly)"/> to register mediator and request handlers.</para>
+/// <para>Invoke in Program or Startup <see cref="MediatorMiddleware.AddMediator(IServiceCollection, Assembly)"/>
+/// to register mediator and request handlers.</para>
 /// </summary>
 public interface IMediator
 {

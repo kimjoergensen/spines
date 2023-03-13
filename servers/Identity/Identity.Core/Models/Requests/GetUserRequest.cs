@@ -4,10 +4,5 @@ using Spines.Shared.Mediators;
 
 public class GetUserRequest : IRequest
 {
-    public string Username { get; private set; }
-
-    public GetUserRequest(string username)
-    {
-        Username = username;
-    }
+    public required string Username { get; init; }
 }

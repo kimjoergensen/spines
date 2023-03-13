@@ -2,6 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
+using Spines.Shared.Exceptions;
 using Spines.Shared.Mediators;
 
 internal class Mediator : IMediator
@@ -21,11 +22,9 @@ internal class Mediator : IMediator
         using var scope = _serviceProvider.CreateScope();
 
         // Resolve closed handler type.
-        dynamic handler = ResolveHandler<IRequest>(scope, typeof(IRequestHandler<>), request.GetType());
+        dynamic handler = Mediator.ResolveHandler<IRequest>(scope, typeof(IRequestHandler<>), request.GetType());
 
-        // Resolve HandleAsync at runtime without having to know about the implementation at buildtime.
-        LogInformation((string)handler.GetType().Name);
-        await (Task)handler.HandleAsync((dynamic)request);
+        await (Task)HandleRequest(handler, request);
     }
 
     public async Task<TResponse> InvokeAsync<TResponse>(IRequest request)
@@ -34,14 +33,12 @@ internal class Mediator : IMediator
         using var scope = _serviceProvider.CreateScope();
 
         // Resolve closed handler type.
-        dynamic handler = ResolveHandler<IRequest>(scope, typeof(IRequestHandler<,>), request.GetType(), typeof(TResponse));
+        dynamic handler = Mediator.ResolveHandler<IRequest>(scope, typeof(IRequestHandler<,>), request.GetType(), typeof(TResponse));
 
-        // Resolve HandleAsync at runtime without having to know about the implementation at buildtime.
-        LogInformation((string)handler.GetType().Name);
-        return await (Task<TResponse>)handler.HandleAsync((dynamic)request);
+        return await (Task<TResponse>)HandleRequest(handler, request);
     }
 
-    private dynamic ResolveHandler<IRequest>(IServiceScope scope, Type requestHandlerType, params Type[] genericTypes)
+    private static dynamic ResolveHandler<IRequest>(IServiceScope scope, Type requestHandlerType, params Type[] genericTypes)
     {
         // Get the Type for IRequestHandler interface with IRequest as the generic type
         // to resolve the handler for the IRequest type.
@@ -51,6 +48,24 @@ internal class Mediator : IMediator
         return scope.ServiceProvider.GetRequiredService(handlerClosedType);
     }
 
-    private void LogInformation(string handler) =>
-        _logger.LogInformation("{handler}: Handling request.", handler);
+    private dynamic HandleRequest(dynamic handler, IRequest request)
+    {
+        var handlerType = (Type)handler.GetType();
+
+        try
+        {
+            _logger.LogInformation("{handler}: Handling request.", handlerType.Name);
+            return handler.HandleAsync((dynamic)request);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "{handler}: An unhandled exception was thrown.", handlerType.Name);
+            throw new MediatorException(handlerType, ex);
+        }
+        finally
+        {
+            _logger.LogInformation("{handler}: Finished request.", handlerType.Name);
+        }
+    }
+
 }
