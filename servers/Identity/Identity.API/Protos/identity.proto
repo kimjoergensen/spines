@@ -9,6 +9,7 @@ package Identity;
 service Identity {
   rpc RegisterUser (RegisterUserRequest) returns (google.protobuf.Empty);
   rpc Login (LoginRequest) returns (google.protobuf.Empty);
+  rpc Test (google.protobuf.Empty) returns (google.protobuf.Empty);
 }
 
 message RegisterUserRequest {
