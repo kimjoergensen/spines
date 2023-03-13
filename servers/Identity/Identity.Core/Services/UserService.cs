@@ -38,10 +38,10 @@ public class UserService : IUserService
     /// </summary>
     /// <param name="query">Login credentials of the user.</param>
     /// <returns><see cref="ApplicationUser"/></returns>
-    /// <exception cref="UserLoginException"/>
-    public async Task LogInUserAsync(LogInUserQuery query)
+    /// <exception cref="AuthenticateUserException"/>
+    public async Task<Token> AuthenticateUserAsync(AuthenticateUserQuery query)
     {
         var user = await _mediator.InvokeAsync<ApplicationUser>(new GetUserRequest(query.Username));
-        await _mediator.InvokeAsync(new LogInUserRequest(user, query.Password));
+        return await _mediator.InvokeAsync<Token>(new AuthenticateUserRequest(user, query.Password));
     }
 }

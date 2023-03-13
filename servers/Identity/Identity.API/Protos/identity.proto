@@ -8,7 +8,7 @@ package Identity;
 
 service Identity {
   rpc RegisterUser (RegisterUserRequest) returns (google.protobuf.Empty);
-  rpc Login (LoginRequest) returns (google.protobuf.Empty);
+  rpc AuthenticateUser (AuthenticateUserRequest) returns (AuthenticationResponse);
   rpc Test (google.protobuf.Empty) returns (google.protobuf.Empty);
 }
 
@@ -17,7 +17,12 @@ message RegisterUserRequest {
   string password = 2;
 }
 
-message LoginRequest {
+message AuthenticateUserRequest {
   string username = 1;
   string password = 2;
+}
+
+message AuthenticationResponse {
+  string access_token = 1;
+  int32 expires_in = 2;
 }

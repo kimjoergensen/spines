@@ -27,14 +27,22 @@ public class IdentityService : Identity.IdentityBase
     public override async Task<Empty> RegisterUser(RegisterUserRequest request, ServerCallContext context)
     {
         await _userService.RegisterUserAsync(new RegisterUserCommand { Email = request.Email, Password = request.Password });
-        await _userService.LogInUserAsync(new LogInUserQuery { Username = request.Email, Password = request.Password });
         return new Empty();
     }
 
     [AllowAnonymous]
-    public override async Task<Empty> Login(LoginRequest request, ServerCallContext context)
+    public override async Task<AuthenticationResponse> AuthenticateUser(AuthenticateUserRequest request, ServerCallContext context)
     {
-        await _userService.LogInUserAsync(new LogInUserQuery { Username = request.Username, Password = request.Password });
+        var result = await _userService.AuthenticateUserAsync(new AuthenticateUserQuery { Username = request.Username, Password = request.Password });
+        return new AuthenticationResponse
+        {
+            AccessToken = result.AccessToken,
+            ExpiresIn = result.ExpiresIn
+        };
+    }
+
+    public override async Task<Empty> Test(Empty request, ServerCallContext context)
+    {
         return new Empty();
     }
 }
