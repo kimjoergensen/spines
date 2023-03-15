@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+option csharp_namespace = "Identity.API.Protos";
+
+package Identity;
+
+service Identity {
+  rpc Authenticate (AuthenticationRequest) returns (AuthenticationResponse);
+}
+
+message AuthenticationRequest {
+  string username = 1;
+  string password = 2;
+}
+
+message AuthenticationResponse {
+  string access_token = 1;
+  int32 expires_in = 2;
+}
