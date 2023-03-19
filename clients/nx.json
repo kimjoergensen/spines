@@ -1,6 +1,6 @@
 {
   "$schema": "./node_modules/nx/schemas/nx-schema.json",
-  "npmScope": "spines",
+  "npmScope": "clients",
   "affected": {
     "defaultBase": "master"
   },
@@ -14,7 +14,7 @@
           "test",
           "e2e"
         ],
-        "accessToken": "YWI3MWRjNmMtNDFiMi00YzFlLWFlMjEtMDNmNzM5YWIzODEwfHJlYWQtd3JpdGU="
+        "accessToken": "Yzg0YjNjYWYtMTA1MC00MjI3LTg1YTEtMmM5N2MyM2QzOTc5fHJlYWQtd3JpdGU="
       }
     }
   },
@@ -38,9 +38,5 @@
       "default"
     ],
     "sharedGlobals": []
-  },
-  "workspaceLayout": {
-    "appsDir": "packages",
-    "libsDir": "packages"
   }
 }
