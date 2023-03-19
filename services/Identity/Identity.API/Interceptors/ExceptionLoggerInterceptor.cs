@@ -22,9 +22,10 @@ public class ExceptionLoggerInterceptor : Interceptor
             return await continuation(request, context);
         }
         catch (Exception ex)
+        when (ex is not RpcException)
         {
             _logger.LogError(ex, "An unhandled exception was caught in gRPC {method}.", context.Method);
-            return null;
+            throw new RpcException(new Status(StatusCode.Internal, "Operation could not be completed."));
         }
     }
 }

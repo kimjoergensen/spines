@@ -29,7 +29,7 @@ public class AuthenticateUserRequestHandler : IRequestHandler<AuthenticateUserRe
         _options = options.Value;
     }
 
-    public async Task<Token> HandleAsync(AuthenticateUserRequest request)
+    public async ValueTask<Token> HandleAsync(AuthenticateUserRequest request)
     {
         var loginResult = await _signInManager.PasswordSignInAsync(request.User, request.Password, true, false);
         if (!loginResult.Succeeded || loginResult.IsNotAllowed || loginResult.IsLockedOut)

@@ -2,9 +2,15 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
-using Spines.Shared.Exceptions;
 using Spines.Shared.Mediators;
 
+/// <summary>
+/// <para>Mediator pattern implementation. Used to invoke <see cref="IRequest"/>,
+/// which will be automatically handled by registered <see cref="IRequestHandler{TRequest}"/> or <see cref="IRequestHandler{TRequest, TResponse}"/></para>
+/// 
+/// <para>Invoke in Program or Startup <see cref="MediatorMiddleware.AddMediator(IServiceCollection, Assembly)"/>
+/// to register mediator and request handlers.</para>
+/// </summary>
 internal class Mediator : IMediator
 {
     private readonly ILogger _logger;
@@ -16,7 +22,11 @@ internal class Mediator : IMediator
         _serviceProvider = serviceProvider;
     }
 
-    public async Task InvokeAsync(IRequest request)
+    /// <summary>
+    /// Invoke the registered <see cref="IRequestHandler{TRequest}"/>.
+    /// </summary>
+    /// <param name="request">Values to pass to <see cref="IRequestHandler{TRequest}.HandleAsync(TRequest)"/>.</param>
+    public async ValueTask InvokeAsync(IRequest request)
     {
         // A new scope must be created to resolve scoped services.
         using var scope = _serviceProvider.CreateScope();
@@ -24,10 +34,16 @@ internal class Mediator : IMediator
         // Resolve closed handler type.
         dynamic handler = Mediator.ResolveHandler<IRequest>(scope, typeof(IRequestHandler<>), request.GetType());
 
-        await (Task)HandleRequest(handler, request);
+        await HandleRequest(handler, request);
     }
 
-    public async Task<TResponse?> InvokeAsync<TResponse>(IRequest request)
+    /// <summary>
+    /// Invoke the registered <see cref="IRequestHandler{TRequest, TResponse}"/>.
+    /// </summary>
+    /// <typeparam name="TResponse">Response type from the handler.</typeparam>
+    /// <param name="request">Values to pass to <see cref="IRequestHandler{TRequest, TResponse}.HandleAsync(TRequest)"/>.</param>
+    /// <returns><typeparamref name="TResponse"/></returns>
+    public async ValueTask<TResponse?> InvokeAsync<TResponse>(IRequest request)
     {
         // A new scope must be created to resolve scoped services.
         using var scope = _serviceProvider.CreateScope();
@@ -35,7 +51,7 @@ internal class Mediator : IMediator
         // Resolve closed handler type.
         dynamic handler = Mediator.ResolveHandler<IRequest>(scope, typeof(IRequestHandler<,>), request.GetType(), typeof(TResponse));
 
-        return await (Task<TResponse?>)HandleRequest(handler, request);
+        return await HandleRequest(handler, request);
     }
 
     private static dynamic ResolveHandler<IRequest>(IServiceScope scope, Type requestHandlerType, params Type[] genericTypes)
@@ -48,24 +64,23 @@ internal class Mediator : IMediator
         return scope.ServiceProvider.GetRequiredService(handlerClosedType);
     }
 
-    private dynamic HandleRequest(dynamic handler, IRequest request)
+    private async ValueTask<dynamic> HandleRequest(dynamic handler, IRequest request)
     {
         var handlerType = (Type)handler.GetType();
 
         try
         {
             _logger.LogInformation("{handler}: Handling request.", handlerType.Name);
-            return handler.HandleAsync((dynamic)request);
+            return await handler.HandleAsync((dynamic)request);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "{handler}: An unhandled exception was thrown.", handlerType.Name);
-            throw new MediatorException(handlerType, ex);
+            _logger.LogError(ex, "{handler}: An exception was thrown.", handlerType.Name);
+            throw;
         }
         finally
         {
             _logger.LogInformation("{handler}: Finished request.", handlerType.Name);
         }
     }
-
 }

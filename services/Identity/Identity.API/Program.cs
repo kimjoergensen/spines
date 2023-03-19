@@ -24,6 +24,7 @@ var coreAssembly = Assembly.GetAssembly(typeof(AssemblyReference))
 builder.Services.Configure<AuthenticationOptions>(
     builder.Configuration.GetSection(AuthenticationOptions.Configuration));
 
+builder.Services.AddScoped<IIdentityMediator, IdentityMediator>();
 builder.Services.AddScoped<IUserMediator, UserMediator>();
 
 // Additional configuration is required to successfully run gRPC on macOS.
@@ -104,6 +105,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapGrpcService<IdentityService>();
+app.MapGrpcService<UserService>();
 app.MapGet("/", () => "Communication with gRPC endpoints must be made through a gRPC client. To learn how to create a client, visit: https://go.microsoft.com/fwlink/?linkid=2086909");
 
 if (app.Environment.IsDevelopment())

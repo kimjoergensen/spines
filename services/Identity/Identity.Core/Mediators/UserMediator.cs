@@ -1,7 +1,5 @@
 ﻿namespace Identity.Core.Services;
 
-using System.Security.Claims;
-
 using Identity.Core.Exceptions;
 using Identity.Core.Models;
 using Identity.Core.Models.Commands;
@@ -27,8 +25,8 @@ public class UserMediator : IUserMediator
     /// Register a new user.
     /// </summary>
     /// <param name="command">Mediator command for registering a new user.</param>
-    /// <returns>Registered user's <see cref="ClaimsPrincipal"/>.</returns>
+    /// <returns>Registered <see cref="ApplicationUser"/>.</returns>
     /// <exception cref="UserRegistrationException"/>
-    public async Task RegisterUserAsync(RegisterUserCommand command) =>
+    public async Task<ApplicationUser?> RegisterUserAsync(RegisterUserCommand command) =>
         await _mediator.InvokeAsync<ApplicationUser>(new RegisterUserRequest { Email = command.Email, Password = command.Password });
 }

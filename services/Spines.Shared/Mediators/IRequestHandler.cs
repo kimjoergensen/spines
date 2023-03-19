@@ -13,7 +13,7 @@ public interface IRequestHandler<TRequest> where TRequest : IRequest
     /// where <see cref="IRequest"/> matches <typeparamref name="TRequest"/>, is executed.
     /// </summary>
     /// <param name="request">The request values passed through <see cref="IMediator.InvokeAsync(IRequest)"/>.</param>
-    Task HandleAsync(TRequest request);
+    ValueTask HandleAsync(TRequest request);
 }
 
 /// <inheritdoc cref="IRequestHandler{TRequest}"/>
@@ -26,5 +26,5 @@ public interface IRequestHandler<TRequest, TResponse> where TRequest : IRequest
     /// </summary>
     /// <param name="request"></param>
     /// <returns><typeparamref name="TResponse"/></returns>
-    Task<TResponse> HandleAsync(TRequest request);
+    ValueTask<TResponse> HandleAsync(TRequest request);
 }

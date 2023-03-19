@@ -4,9 +4,9 @@ import "google/protobuf/empty.proto";
 
 option csharp_namespace = "Identity.API.Protos";
 
-package Users;
+package User;
 
-service Users {
+service User {
   rpc Register (RegisterUserRequest) returns (google.protobuf.Empty);
 }
 

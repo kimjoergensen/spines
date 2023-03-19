@@ -20,7 +20,7 @@ public class GetUserRequestHandler : IRequestHandler<GetUserRequest, Application
         _userManager = userManager;
     }
 
-    public async Task<ApplicationUser> HandleAsync(GetUserRequest request) =>
+    public async ValueTask<ApplicationUser> HandleAsync(GetUserRequest request) =>
         await _userManager.FindByNameAsync(request.Username)
             ?? throw new NotFoundException<ApplicationUser>(request.Username);
 }

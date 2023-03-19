@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using global::Grpc.Core;
 
 using Identity.API.Protos;
+using Identity.Core.Exceptions;
 using Identity.Core.Models.Queries;
 using Identity.Core.Services.Interfaces;
 
@@ -25,7 +26,14 @@ public class IdentityService : Identity.IdentityBase
     [AllowAnonymous]
     public override async Task<AuthenticationResponse> Authenticate(AuthenticationRequest request, ServerCallContext context)
     {
-        var token = await _service.AuthenticateUserAsync(new AuthenticateUserQuery { Username = request.Username, Password = request.Password });
-        return new AuthenticationResponse { AccessToken = token.AccessToken, ExpiresIn = token.ExpiresIn };
+        try
+        {
+            var token = await _service.AuthenticateUserAsync(new AuthenticateUserQuery { Username = request.Username, Password = request.Password });
+            return new AuthenticationResponse { AccessToken = token.AccessToken, ExpiresIn = token.ExpiresIn };
+        }
+        catch (AuthenticateUserException ex)
+        {
+            throw new RpcException(new Status(StatusCode.InvalidArgument, ex.Message));
+        }
     }
 }
