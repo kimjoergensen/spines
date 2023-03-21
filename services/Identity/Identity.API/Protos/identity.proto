@@ -1,5 +1,7 @@
 syntax = "proto3";
 
+import "google/protobuf/timestamp.proto";
+
 option csharp_namespace = "Identity.API.Protos";
 
 package Identity;
@@ -15,5 +17,5 @@ message AuthenticationRequest {
 
 message AuthenticationResponse {
   string access_token = 1;
-  int32 expires_in = 2;
+  google.protobuf.Timestamp expires = 2;
 }

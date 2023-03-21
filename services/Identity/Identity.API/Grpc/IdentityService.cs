@@ -4,6 +4,8 @@ using System.Threading.Tasks;
 
 using global::Grpc.Core;
 
+using Google.Protobuf.WellKnownTypes;
+
 using Identity.API.Protos;
 using Identity.Core.Exceptions;
 using Identity.Core.Models.Queries;
@@ -29,7 +31,8 @@ public class IdentityService : Identity.IdentityBase
         try
         {
             var token = await _service.AuthenticateUserAsync(new AuthenticateUserQuery { Username = request.Username, Password = request.Password });
-            return new AuthenticationResponse { AccessToken = token.AccessToken, ExpiresIn = token.ExpiresIn };
+            var expires = DateTimeOffset.Now.AddMinutes(token.ExpiresIn);
+            return new AuthenticationResponse { AccessToken = token.AccessToken, Expires = Timestamp.FromDateTimeOffset(expires) };
         }
         catch (AuthenticateUserException ex)
         {
