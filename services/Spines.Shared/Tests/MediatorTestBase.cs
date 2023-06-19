@@ -8,6 +8,6 @@ using Spines.Shared.Mediators;
 
 public class MediatorTestBase
 {
-    protected readonly Mock<IMediator> _mediatorMock = new();
-    protected readonly Fixture _fixture = new();
+    protected Mock<IMediator> MediatorMock { get; } = new();
+    protected Fixture Fixture { get; } = new();
 }

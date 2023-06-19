@@ -7,7 +7,7 @@ public class AuthenticateUserException : Exception
 {
     public ApplicationUser User { get; }
 
-    public AuthenticateUserException(ApplicationUser user) : base($"Unable to authenticate user {user.UserName}.")
+    public AuthenticateUserException(ApplicationUser user) : base($"Unable to authenticate user '{user.Email}'.")
     {
         User = user;
     }

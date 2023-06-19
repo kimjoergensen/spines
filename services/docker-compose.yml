@@ -10,9 +10,19 @@ services:
       db:
         condition: service_healthy
 
+  organization.api:
+    image: ${DOCKER_REGISTRY-}organizationapi
+    build:
+      context: .
+      dockerfile: Organization/Organization.API/Dockerfile
+    depends_on:
+      db:
+        condition: service_healthy
+
   db:
     image: mcr.microsoft.com/mssql/server:2022-latest
     container_name: sqlserver
 
 volumes:
   sqlvolume:
+

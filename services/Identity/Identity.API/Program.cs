@@ -1,8 +1,7 @@
 using System.Reflection;
 using System.Text;
 
-using Identity.API.Grpc;
-using Identity.API.Interceptors;
+using Identity.API.Services;
 using Identity.Core;
 using Identity.Core.Data;
 using Identity.Core.Models;
@@ -15,9 +14,13 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
+using Spines.Shared.Interceptors;
 using Spines.Shared.Mediators.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
+
 var coreAssembly = Assembly.GetAssembly(typeof(AssemblyReference))
     ?? throw new AppDomainUnloadedException("Unable to get assembly reference.");
 
@@ -94,6 +97,7 @@ builder.Services.AddGrpc(options =>
 {
     options.Interceptors.Add<ExceptionLoggerInterceptor>();
 });
+
 builder.Services.AddGrpcReflection();
 
 var app = builder.Build();
