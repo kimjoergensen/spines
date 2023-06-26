@@ -2,18 +2,14 @@
 
 using System.Threading.Tasks;
 
-using Google.Protobuf.WellKnownTypes;
-
 using Grpc.Core;
 
-using Identity.API.Protos;
+using Identity.API.Services.Interfaces;
 using Identity.Core.Exceptions;
 using Identity.Core.Models.Commands;
 using Identity.Core.Services.Interfaces;
 
-using Spines.Shared.Extensions;
-
-public class UserService : User.UserBase
+public class UserService : IUserService
 {
     private readonly ILogger _logger;
     private readonly IUserMediator _mediator;
@@ -24,16 +20,15 @@ public class UserService : User.UserBase
         _mediator = mediator;
     }
 
-    public override async Task<Empty> Register(RegisterUserRequest request, ServerCallContext context)
+    public async ValueTask RegisterUser(RegisterUserRequest request)
     {
         try
         {
             await _mediator.RegisterUserAsync(new RegisterUserCommand { Email = request.Email, Password = request.Password });
-            return new Empty();
         }
         catch (UserRegistrationException ex)
         {
-            throw new RpcException(new Status(StatusCode.InvalidArgument, ex.Message), new Metadata().ConvertIdentityErrors(ex.Errors));
+            throw new RpcException(new Status(StatusCode.InvalidArgument, ex.Message));
         }
     }
 }

@@ -21,4 +21,8 @@
     <PackageReference Include="System.ServiceModel.Primitives" Version="6.0.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\Spines.Shared\Spines.Shared.csproj" />
+  </ItemGroup>
+
 </Project>

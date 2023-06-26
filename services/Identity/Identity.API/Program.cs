@@ -14,7 +14,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
-using Spines.Shared.Interceptors;
+using ProtoBuf.Grpc.Server;
+
 using Spines.Shared.Mediators.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -26,6 +27,8 @@ var coreAssembly = Assembly.GetAssembly(typeof(AssemblyReference))
 
 builder.Services.Configure<AuthenticationOptions>(
     builder.Configuration.GetSection(AuthenticationOptions.Configuration));
+
+builder.Services.AddMediator(coreAssembly);
 
 builder.Services.AddScoped<IIdentityMediator, IdentityMediator>();
 builder.Services.AddScoped<IUserMediator, UserMediator>();
@@ -68,37 +71,31 @@ builder.Services.Configure<IdentityOptions>(options =>
 #region Auth
 var authConfiguration = builder.Configuration.GetSection(AuthenticationOptions.Configuration).Get<AuthenticationOptions>()
     ?? throw new ApplicationException($"Missing {AuthenticationOptions.Configuration} values in appsettings.");
+
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
     options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
     options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-}).AddJwtBearer(options =>
+}).AddJwtBearer(options => options.TokenValidationParameters = new TokenValidationParameters
 {
-    options.TokenValidationParameters = new TokenValidationParameters
-    {
-        ValidIssuer = authConfiguration.Issuer,
-        ValidAudience = authConfiguration.Audience,
-        IssuerSigningKey = new SymmetricSecurityKey(
+    ValidIssuer = authConfiguration.Issuer,
+    ValidAudience = authConfiguration.Audience,
+    IssuerSigningKey = new SymmetricSecurityKey(
             Encoding.ASCII.GetBytes(authConfiguration.SigninKey)),
-        ValidateIssuer = true,
-        ValidateAudience = true,
-        ValidateLifetime = false,
-        ValidateIssuerSigningKey = true
-    };
+    ValidateIssuer = true,
+    ValidateAudience = true,
+    ValidateLifetime = false,
+    ValidateIssuerSigningKey = true
 });
 
 builder.Services.AddAuthorization();
 #endregion
 
-builder.Services.AddMediator(coreAssembly);
-
-builder.Services.AddGrpc(options =>
-{
-    options.Interceptors.Add<ExceptionLoggerInterceptor>();
-});
-
-builder.Services.AddGrpcReflection();
+#region gRPC
+builder.Services.AddCodeFirstGrpc();
+builder.Services.AddCodeFirstGrpcReflection();
+#endregion
 
 var app = builder.Build();
 
@@ -111,7 +108,8 @@ app.UseAuthorization();
 app.MapGrpcService<IdentityService>();
 app.MapGrpcService<UserService>();
 app.MapGet("/", () => "Communication with gRPC endpoints must be made through a gRPC client. To learn how to create a client, visit: https://go.microsoft.com/fwlink/?linkid=2086909");
-app.MapGrpcReflectionService();
+
+app.MapCodeFirstGrpcReflectionService();
 
 if (app.Environment.IsDevelopment())
 {
