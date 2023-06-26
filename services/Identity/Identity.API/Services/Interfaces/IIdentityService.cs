@@ -26,5 +26,5 @@ public class AuthenticateUserResponse
     public string AccessToken { get; set; }
 
     [DataMember(Order = 2)]
-    public DateTimeOffset Expires { get; set; }
+    public TimeSpan Expires { get; set; }
 }

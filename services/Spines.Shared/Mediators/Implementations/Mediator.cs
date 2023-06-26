@@ -42,8 +42,7 @@ internal class Mediator : IMediator
     /// </summary>
     /// <typeparam name="TResponse">Response type from the handler.</typeparam>
     /// <param name="request">Values to pass to <see cref="IRequestHandler{TRequest, TResponse}.HandleAsync(TRequest)"/>.</param>
-    /// <returns><typeparamref name="TResponse"/></returns>
-    public async ValueTask<TResponse?> InvokeAsync<TResponse>(IRequest request)
+    public async ValueTask<TResponse> InvokeAsync<TResponse>(IRequest request)
     {
         // A new scope must be created to resolve scoped services.
         using var scope = _serviceProvider.CreateScope();
@@ -72,11 +71,6 @@ internal class Mediator : IMediator
         {
             _logger.LogInformation("{handler}: Handling request.", handlerType.Name);
             return await handler.HandleAsync((dynamic)request);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "{handler}: An exception was thrown.", handlerType.Name);
-            throw;
         }
         finally
         {

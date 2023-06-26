@@ -11,5 +11,5 @@ public interface IMediator
     ValueTask InvokeAsync(IRequest request);
 
     /// <inheritdoc cref="Mediator.InvokeAsync{TResponse}(IRequest)"/>
-    ValueTask<TResponse?> InvokeAsync<TResponse>(IRequest request);
+    ValueTask<TResponse> InvokeAsync<TResponse>(IRequest request);
 }

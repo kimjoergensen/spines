@@ -9,8 +9,7 @@
 public interface IRequestHandler<TRequest> where TRequest : IRequest
 {
     /// <summary>
-    /// Automatically invoked when <see cref="IMediator.InvokeAsync(IRequest)"/>,
-    /// where <see cref="IRequest"/> matches <typeparamref name="TRequest"/>, is executed.
+    /// Automatically invoked when <see cref="IMediator.InvokeAsync(IRequest)"/> is executed.
     /// </summary>
     /// <param name="request">The request values passed through <see cref="IMediator.InvokeAsync(IRequest)"/>.</param>
     ValueTask HandleAsync(TRequest request);
@@ -21,10 +20,8 @@ public interface IRequestHandler<TRequest> where TRequest : IRequest
 public interface IRequestHandler<TRequest, TResponse> where TRequest : IRequest
 {
     /// <summary>
-    /// Automatically invoked when <see cref="IMediator.InvokeAsync{TResponse}(IRequest)"/>,
-    /// where <see cref="IRequest"/> matches <typeparamref name="TRequest"/>, is executed.
+    /// Automatically invoked when <see cref="IMediator.InvokeAsync{TResponse}(IRequest)"/> is executed.
     /// </summary>
     /// <param name="request"></param>
-    /// <returns><typeparamref name="TResponse"/></returns>
     ValueTask<TResponse> HandleAsync(TRequest request);
 }

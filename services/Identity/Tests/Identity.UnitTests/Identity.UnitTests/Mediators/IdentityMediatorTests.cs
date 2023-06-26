@@ -1,10 +1,10 @@
 ﻿namespace Identity.UnitTests.Mediators;
 
+using Identity.Core.Mediators;
+using Identity.Core.Mediators.Interfaces;
 using Identity.Core.Models;
 using Identity.Core.Models.Queries;
 using Identity.Core.Models.Requests;
-using Identity.Core.Services;
-using Identity.Core.Services.Interfaces;
 
 using Microsoft.Extensions.Logging;
 

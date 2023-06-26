@@ -6,8 +6,8 @@ using Grpc.Core;
 
 using Identity.API.Services.Interfaces;
 using Identity.Core.Exceptions;
+using Identity.Core.Mediators.Interfaces;
 using Identity.Core.Models.Queries;
-using Identity.Core.Services.Interfaces;
 
 using Microsoft.AspNetCore.Authorization;
 
@@ -23,29 +23,13 @@ public class IdentityService : IIdentityService
         _service = service;
     }
 
-    //[AllowAnonymous]
-    //public override async Task<AuthenticationResponse> Authenticate(AuthenticationRequest request, ServerCallContext context)
-    //{
-    //    try
-    //    {
-    //        var token = await _service.AuthenticateUserAsync(new AuthenticateUserQuery { Username = request.Username, Password = request.Password });
-    //        var expires = DateTimeOffset.Now.AddMinutes(token.ExpiresIn);
-    //        return new AuthenticationResponse { AccessToken = token.AccessToken, Expires = Timestamp.FromDateTimeOffset(expires) };
-    //    }
-    //    catch (AuthenticateUserException ex)
-    //    {
-    //        throw new RpcException(new Status(StatusCode.InvalidArgument, ex.Message));
-    //    }
-    //}
-
     [AllowAnonymous]
     public async ValueTask<AuthenticateUserResponse> Authenticate(AuthenticateUserRequest request)
     {
         try
         {
             var token = await _service.AuthenticateUserAsync(new AuthenticateUserQuery { Username = request.Username, Password = request.Password });
-            var expires = DateTimeOffset.Now.AddMinutes(token.ExpiresIn);
-            return new AuthenticateUserResponse { AccessToken = token.AccessToken, Expires = expires };
+            return new AuthenticateUserResponse { AccessToken = token.AccessToken, Expires = TimeSpan.FromMinutes(30) };
         }
         catch (AuthenticateUserException ex)
         {
