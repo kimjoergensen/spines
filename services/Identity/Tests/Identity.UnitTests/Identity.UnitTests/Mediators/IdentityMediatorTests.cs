@@ -8,6 +8,7 @@ using Identity.Core.Models.Requests;
 
 using Microsoft.Extensions.Logging;
 
+using Spines.Shared.Exceptions;
 using Spines.Shared.Tests;
 
 public class IdentityMediatorTests : MediatorTestBase
@@ -22,11 +23,11 @@ public class IdentityMediatorTests : MediatorTestBase
 
     #region AuthenticateUserAsync
     [Fact]
-    public async Task AuthenticateUserAsync_UserNotFound_ReturnsNull()
+    public async Task AuthenticateUserAsync_NotFoundException_ExceptionRethrown()
     {
         // Arrange
         MediatorMock.Setup(x => x.InvokeAsync<ApplicationUser>(It.IsAny<GetUserRequest>()))
-            .ReturnsAsync(null as ApplicationUser);
+            .ThrowsAsync(new NotFoundException<ApplicationUser>(It.IsAny<string>()));
 
         // Act
         var actual = await _identityMediator.AuthenticateUserAsync(Fixture.Create<AuthenticateUserQuery>());

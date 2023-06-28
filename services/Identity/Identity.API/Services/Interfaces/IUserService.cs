@@ -13,8 +13,8 @@ public interface IUserService
 public record RegisterUserRequest
 {
     [DataMember(Order = 1)]
-    public string Email { get; set; }
+    public required string Email { get; set; }
 
     [DataMember(Order = 2)]
-    public string Password { get; set; }
+    public required string Password { get; set; }
 }

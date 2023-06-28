@@ -1,4 +1,4 @@
-﻿namespace Identity.Core.Services;
+﻿namespace Identity.Core.Mediators;
 
 using Identity.Core.Exceptions;
 using Identity.Core.Models;

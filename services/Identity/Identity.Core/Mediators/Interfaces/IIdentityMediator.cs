@@ -1,13 +1,12 @@
-﻿using Identity.Core.Services;
+﻿namespace Identity.Core.Mediators.Interfaces;
 
-namespace Identity.Core.Mediators.Interfaces;
-using System.Threading.Tasks;
+using Identity.Core.Mediators;
 
 using Identity.Core.Models;
 using Identity.Core.Models.Queries;
 
 public interface IIdentityMediator
 {
-    /// <inheritdoc cref="UserMediator.AuthenticateUserAsync(AuthenticateUserQuery)"/>
+    /// <inheritdoc cref="IdentityMediator.AuthenticateUserAsync(AuthenticateUserQuery)"/>
     Task<Token> AuthenticateUserAsync(AuthenticateUserQuery query);
 }

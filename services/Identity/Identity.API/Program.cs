@@ -4,9 +4,10 @@ using System.Text;
 using Identity.API.Services;
 using Identity.Core;
 using Identity.Core.Data;
+using Identity.Core.Mediators;
+using Identity.Core.Mediators.Interfaces;
 using Identity.Core.Models;
 using Identity.Core.Options;
-using Identity.Core.Services;
 using Identity.Core.Services.Interfaces;
 
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -16,7 +17,7 @@ using Microsoft.IdentityModel.Tokens;
 
 using ProtoBuf.Grpc.Server;
 
-using Spines.Shared.Mediators.Middlewares;
+using Spines.Shared.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Logging.ClearProviders();
@@ -59,7 +60,7 @@ builder.Services.Configure<IdentityOptions>(options =>
     options.Password.RequiredUniqueChars = 6;
 
     // Lockout settings
-    options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(30);
+    options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(3);
     options.Lockout.MaxFailedAccessAttempts = 10;
     options.Lockout.AllowedForNewUsers = true;
 

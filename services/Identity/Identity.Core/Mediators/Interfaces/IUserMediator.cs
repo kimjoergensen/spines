@@ -2,6 +2,7 @@
 
 using System.Threading.Tasks;
 
+using Identity.Core.Mediators;
 using Identity.Core.Models;
 using Identity.Core.Models.Commands;
 

@@ -1,14 +1,12 @@
 ﻿namespace Identity.Core.Exceptions;
 using System;
 
-using Identity.Core.Models;
-
 public class AuthenticateUserException : Exception
 {
-    public ApplicationUser User { get; }
+    public string Username { get; }
 
-    public AuthenticateUserException(ApplicationUser user) : base($"Unable to authenticate user '{user.Email}'.")
+    public AuthenticateUserException(string username) : base($"Unable to authenticate user '{username}'.")
     {
-        User = user;
+        Username = username;
     }
 }

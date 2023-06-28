@@ -6,7 +6,6 @@ using Identity.Core.Models.Requests;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 
-using Spines.Shared.Exceptions;
 using Spines.Shared.Mediators;
 
 public class GetUserRequestHandler : IRequestHandler<GetUserRequest, ApplicationUser>
@@ -20,7 +19,6 @@ public class GetUserRequestHandler : IRequestHandler<GetUserRequest, Application
         _userManager = userManager;
     }
 
-    public async ValueTask<ApplicationUser> HandleAsync(GetUserRequest request) =>
-        await _userManager.FindByNameAsync(request.Username)
-            ?? throw new NotFoundException<ApplicationUser>(request.Username);
+    public async ValueTask<ApplicationUser?> HandleAsync(GetUserRequest request) =>
+        await _userManager.FindByNameAsync(request.Username);
 }

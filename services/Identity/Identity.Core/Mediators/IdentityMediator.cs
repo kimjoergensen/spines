@@ -1,4 +1,5 @@
 ﻿namespace Identity.Core.Mediators;
+
 using System.Threading.Tasks;
 
 using Identity.Core.Exceptions;
@@ -9,7 +10,6 @@ using Identity.Core.Models.Requests;
 
 using Microsoft.Extensions.Logging;
 
-using Spines.Shared.Exceptions;
 using Spines.Shared.Mediators;
 
 public class IdentityMediator : IIdentityMediator
@@ -24,15 +24,22 @@ public class IdentityMediator : IIdentityMediator
     }
 
     /// <summary>
-    /// Log in a user for the specified login credentials.
+    /// Authenticate a user by the login credentials.
     /// </summary>
     /// <param name="query">Login credentials of the user.</param>
-    /// <returns><see cref="ApplicationUser"/></returns>
+    /// <returns>JWT Bearer token.</returns>
     /// <exception cref="AuthenticateUserException"/>
-    /// <exception cref="NotFoundException{ApplicationUser}"/>
     public async Task<Token> AuthenticateUserAsync(AuthenticateUserQuery query)
     {
         var user = await _mediator.InvokeAsync<ApplicationUser>(new GetUserRequest { Username = query.Username });
-        return await _mediator.InvokeAsync<Token>(new AuthenticateUserRequest { User = user, Password = query.Password });
+
+        if (user is null)
+        {
+            _logger.LogInformation("User '{user}' is not registered.", query.Username);
+            throw new AuthenticateUserException(query.Username);
+        }
+
+        var token = await _mediator.InvokeAsync<Token>(new AuthenticateUserRequest { User = user, Password = query.Password });
+        return token!;
     }
 }

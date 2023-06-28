@@ -22,11 +22,12 @@ public class RegisterUserRequestHandler : IRequestHandler<RegisterUserRequest, A
         _passwordHasher = passwordHasher;
     }
 
-    public async ValueTask<ApplicationUser> HandleAsync(RegisterUserRequest request)
+    public async ValueTask<ApplicationUser?> HandleAsync(RegisterUserRequest request)
     {
         var user = new ApplicationUser { UserName = request.Email, Email = request.Email };
         user.PasswordHash = _passwordHasher.HashPassword(user, request.Password);
         var result = await _userManager.CreateAsync(user);
+        _logger.LogInformation("User created result for '{user}' {result}", request.Email, result.ToString());
         return result.Succeeded ? user : throw new UserRegistrationException(request.Email, result.Errors);
     }
 }

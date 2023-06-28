@@ -1,4 +1,4 @@
-﻿namespace Spines.Shared.Mediators.Middlewares;
+﻿namespace Spines.Shared.Middlewares;
 
 using System.Reflection;
 
@@ -14,8 +14,16 @@ using Spines.Shared.Mediators.Implementations;
 public static class MediatorMiddleware
 {
     /// <summary>
-    /// Register <see cref="IMediator"/>, and all <see cref="IRequestHandler{TRequest}"/> and <see cref="IRequestHandler{TRequest, TResponse}"/> in <paramref name="assembly"/>.
+    /// Register <see cref="IMediator"/> for dependency injection.
     /// </summary>
+    /// <remarks>
+    /// Also registers all derived classes of <see cref="IRequestHandler{TRequest}"/> and <see cref="IRequestHandler{TRequest, TResponse}"/>
+    /// in <paramref name="assembly"/> to invoke
+    /// <list type="bullet">
+    /// <item><see cref="IRequestHandler{TRequest}.HandleAsync(TRequest)"/> when executing <see cref="IMediator.InvokeAsync(IRequest)"/>.</item>
+    /// <item><see cref="IRequestHandler{TRequest, TResponse}"/> when executing <see cref="IMediator.InvokeAsync{TResponse}(IRequest)"/>.</item>
+    /// </list>
+    /// </remarks>
     /// <param name="services"></param>
     /// <param name="assembly"></param>
     public static void AddMediator(this IServiceCollection services, Assembly assembly)

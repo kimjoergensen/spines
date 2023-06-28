@@ -10,21 +10,21 @@ public interface IIdentityService
 }
 
 [DataContract]
-public class AuthenticateUserRequest
+public record AuthenticateUserRequest
 {
     [DataMember(Order = 1)]
-    public string Username { get; set; }
+    public required string Username { get; set; }
 
     [DataMember(Order = 2)]
-    public string Password { get; set; }
+    public required string Password { get; set; }
 }
 
 [DataContract]
 public class AuthenticateUserResponse
 {
     [DataMember(Order = 1)]
-    public string AccessToken { get; set; }
+    public required string AccessToken { get; set; }
 
     [DataMember(Order = 2)]
-    public TimeSpan Expires { get; set; }
+    public required TimeSpan Expires { get; set; }
 }

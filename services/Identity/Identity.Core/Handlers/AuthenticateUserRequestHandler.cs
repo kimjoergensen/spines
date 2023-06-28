@@ -7,6 +7,7 @@ using System.Text;
 using Identity.Core.Exceptions;
 using Identity.Core.Models;
 using Identity.Core.Models.Requests;
+using Identity.Core.Options;
 
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
@@ -19,21 +20,23 @@ public class AuthenticateUserRequestHandler : IRequestHandler<AuthenticateUserRe
 {
     private readonly ILogger _logger;
     private readonly SignInManager<ApplicationUser> _signInManager;
-    private readonly Core.Options.AuthenticationOptions _options;
+    private readonly AuthenticationOptions _options;
 
     public AuthenticateUserRequestHandler(
-        ILogger<AuthenticateUserRequestHandler> logger, SignInManager<ApplicationUser> signInManager, IOptions<Core.Options.AuthenticationOptions> options)
+        ILogger<AuthenticateUserRequestHandler> logger, SignInManager<ApplicationUser> signInManager, IOptions<AuthenticationOptions> options)
     {
         _logger = logger;
         _signInManager = signInManager;
         _options = options.Value;
     }
 
-    public async ValueTask<Token> HandleAsync(AuthenticateUserRequest request)
+    public async ValueTask<Token?> HandleAsync(AuthenticateUserRequest request)
     {
         var loginResult = await _signInManager.PasswordSignInAsync(request.User, request.Password, true, false);
+        _logger.LogInformation("Login result for user '{user}' {result}.", request.User.UserName, loginResult.ToString());
+
         if (!loginResult.Succeeded || loginResult.IsNotAllowed || loginResult.IsLockedOut)
-            throw new AuthenticateUserException(request.User);
+            throw new AuthenticateUserException(request.User.UserName!);
 
         var token = GenerateToken(request.User);
         return new Token() { AccessToken = token, ExpiresIn = _options.ExpiresIn };
@@ -41,17 +44,15 @@ public class AuthenticateUserRequestHandler : IRequestHandler<AuthenticateUserRe
 
     private string GenerateToken(ApplicationUser user)
     {
-        if (user.UserName is null) throw new AuthenticateUserException(user);
-
         var securityKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(_options.SigninKey));
         var tokenHandler = new JwtSecurityTokenHandler();
         var tokenDescriptor = new SecurityTokenDescriptor
         {
             Subject = new ClaimsIdentity(new List<Claim>()
             {
-                new Claim(ClaimTypes.Name, user.UserName)
+                new Claim(ClaimTypes.Name, user.UserName!)
             }),
-            Expires = DateTime.UtcNow.AddMinutes(30),
+            Expires = DateTime.UtcNow.AddMinutes(_options.ExpiresIn),
             Issuer = _options.Issuer,
             Audience = _options.Audience,
             SigningCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256Signature)
