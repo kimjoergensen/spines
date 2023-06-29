@@ -4,11 +4,10 @@ using System.Text;
 using Identity.API.Services;
 using Identity.Core;
 using Identity.Core.Data;
-using Identity.Core.Mediators;
-using Identity.Core.Mediators.Interfaces;
 using Identity.Core.Models;
 using Identity.Core.Options;
-using Identity.Core.Services.Interfaces;
+using Identity.Core.Orchestrators;
+using Identity.Core.Orchestrators.Interfaces;
 
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -31,8 +30,8 @@ builder.Services.Configure<AuthenticationOptions>(
 
 builder.Services.AddMediator(coreAssembly);
 
-builder.Services.AddScoped<IIdentityMediator, IdentityMediator>();
-builder.Services.AddScoped<IUserMediator, UserMediator>();
+builder.Services.AddScoped<IIdentityOrchestrator, IdentityOrchestrator>();
+builder.Services.AddScoped<IUserOrchestrator, UserOrchestrator>();
 
 // Additional configuration is required to successfully run gRPC on macOS.
 // For instructions on how to configure Kestrel and gRPC clients on macOS, visit https://go.microsoft.com/fwlink/?linkid=2099682

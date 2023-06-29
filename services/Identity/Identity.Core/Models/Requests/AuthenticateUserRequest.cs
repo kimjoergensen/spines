@@ -1,9 +1,13 @@
 ﻿namespace Identity.Core.Models.Requests;
 
-using Spines.Shared.Mediators;
+using System.Runtime.Serialization;
 
-public class AuthenticateUserRequest : IRequest
+[DataContract]
+public record AuthenticateUserRequest
 {
-    public required ApplicationUser User { get; init; }
-    public required string Password { get; init; }
+    [DataMember(Order = 1)]
+    public required string Username { get; set; }
+
+    [DataMember(Order = 2)]
+    public required string Password { get; set; }
 }

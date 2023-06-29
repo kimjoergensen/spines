@@ -6,7 +6,7 @@ using System.Text;
 
 using Identity.Core.Exceptions;
 using Identity.Core.Models;
-using Identity.Core.Models.Requests;
+using Identity.Core.Models.Queries;
 using Identity.Core.Options;
 
 using Microsoft.AspNetCore.Identity;
@@ -16,21 +16,21 @@ using Microsoft.IdentityModel.Tokens;
 
 using Spines.Shared.Mediators;
 
-public class AuthenticateUserRequestHandler : IRequestHandler<AuthenticateUserRequest, Token>
+public class AuthenticateUserQueryHandler : IRequestHandler<AuthenticateUserQuery, Token>
 {
     private readonly ILogger _logger;
     private readonly SignInManager<ApplicationUser> _signInManager;
     private readonly AuthenticationOptions _options;
 
-    public AuthenticateUserRequestHandler(
-        ILogger<AuthenticateUserRequestHandler> logger, SignInManager<ApplicationUser> signInManager, IOptions<AuthenticationOptions> options)
+    public AuthenticateUserQueryHandler(
+        ILogger<AuthenticateUserQueryHandler> logger, SignInManager<ApplicationUser> signInManager, IOptions<AuthenticationOptions> options)
     {
         _logger = logger;
         _signInManager = signInManager;
         _options = options.Value;
     }
 
-    public async ValueTask<Token?> HandleAsync(AuthenticateUserRequest request)
+    public async ValueTask<Token?> HandleAsync(AuthenticateUserQuery request)
     {
         var loginResult = await _signInManager.PasswordSignInAsync(request.User, request.Password, true, false);
         _logger.LogInformation("Login result for user '{user}' {result}.", request.User.UserName, loginResult.ToString());

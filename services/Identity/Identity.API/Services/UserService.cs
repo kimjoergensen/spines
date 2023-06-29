@@ -6,25 +6,25 @@ using Grpc.Core;
 
 using Identity.API.Services.Interfaces;
 using Identity.Core.Exceptions;
-using Identity.Core.Models.Commands;
-using Identity.Core.Services.Interfaces;
+using Identity.Core.Models.Requests;
+using Identity.Core.Orchestrators.Interfaces;
 
 public class UserService : IUserService
 {
     private readonly ILogger _logger;
-    private readonly IUserMediator _mediator;
+    private readonly IUserOrchestrator _userOrchestrator;
 
-    public UserService(ILogger<UserService> logger, IUserMediator mediator)
+    public UserService(ILogger<UserService> logger, IUserOrchestrator orchestrator)
     {
         _logger = logger;
-        _mediator = mediator;
+        _userOrchestrator = orchestrator;
     }
 
     public async ValueTask RegisterUser(RegisterUserRequest request)
     {
         try
         {
-            await _mediator.RegisterUserAsync(new RegisterUserCommand { Email = request.Email, Password = request.Password });
+            await _userOrchestrator.RegisterUserAsync(request);
         }
         catch (UserRegistrationException ex)
         {

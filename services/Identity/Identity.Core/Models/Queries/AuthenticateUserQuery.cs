@@ -1,6 +1,9 @@
 ﻿namespace Identity.Core.Models.Queries;
-public class AuthenticateUserQuery
+
+using Spines.Shared.Mediators;
+
+public record AuthenticateUserQuery : IRequest
 {
-    public required string Username { get; set; }
-    public required string Password { get; set; }
+    public required ApplicationUser User { get; init; }
+    public required string Password { get; init; }
 }

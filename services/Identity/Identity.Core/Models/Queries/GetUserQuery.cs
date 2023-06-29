@@ -1,8 +1,8 @@
-﻿namespace Identity.Core.Models.Requests;
+﻿namespace Identity.Core.Models.Queries;
 
 using Spines.Shared.Mediators;
 
-public class GetUserRequest : IRequest
+public record GetUserQuery : IRequest
 {
     public required string Username { get; init; }
 }

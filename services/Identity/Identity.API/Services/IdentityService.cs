@@ -6,8 +6,9 @@ using Grpc.Core;
 
 using Identity.API.Services.Interfaces;
 using Identity.Core.Exceptions;
-using Identity.Core.Mediators.Interfaces;
-using Identity.Core.Models.Queries;
+using Identity.Core.Models.Requests;
+using Identity.Core.Models.Responses;
+using Identity.Core.Orchestrators.Interfaces;
 
 using Microsoft.AspNetCore.Authorization;
 
@@ -15,12 +16,12 @@ using Microsoft.AspNetCore.Authorization;
 public class IdentityService : IIdentityService
 {
     private readonly ILogger _logger;
-    private readonly IIdentityMediator _service;
+    private readonly IIdentityOrchestrator _identityOrchestrator;
 
-    public IdentityService(ILogger<IdentityService> logger, IIdentityMediator service)
+    public IdentityService(ILogger<IdentityService> logger, IIdentityOrchestrator orchestrator)
     {
         _logger = logger;
-        _service = service;
+        _identityOrchestrator = orchestrator;
     }
 
     [AllowAnonymous]
@@ -28,7 +29,7 @@ public class IdentityService : IIdentityService
     {
         try
         {
-            var token = await _service.AuthenticateUserAsync(new AuthenticateUserQuery { Username = request.Username, Password = request.Password });
+            var token = await _identityOrchestrator.AuthenticateUserAsync(request);
             return new AuthenticateUserResponse { AccessToken = token.AccessToken, Expires = TimeSpan.FromMinutes(30) };
         }
         catch (AuthenticateUserException ex)
