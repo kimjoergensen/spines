@@ -29,7 +29,7 @@ public class IdentityOrchestrator : IIdentityOrchestrator
     /// <param name="request">Login credentials of the user.</param>
     /// <returns>Token object containing Bearer JWT and expiration in minutes.</returns>
     /// <exception cref="AuthenticateUserException"/>
-    public async Task<Token> AuthenticateUserAsync(AuthenticateUserRequest request)
+    public async ValueTask<Token> AuthenticateUserAsync(AuthenticateUserRequest request)
     {
         var getUserQuery = new GetUserQuery { Username = request.Username };
         var user = await _mediator.InvokeAsync<ApplicationUser>(getUserQuery);

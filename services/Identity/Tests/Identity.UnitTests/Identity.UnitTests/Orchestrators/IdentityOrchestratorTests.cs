@@ -11,7 +11,7 @@ using Microsoft.Extensions.Logging;
 
 using Spines.Shared.Tests;
 
-public class IdentityOrchestratorTests : MediatorTestBase
+public class IdentityOrchestratorTests : OrchestratorTestBase
 {
     private readonly IIdentityOrchestrator _identityMediator;
 
@@ -30,7 +30,7 @@ public class IdentityOrchestratorTests : MediatorTestBase
             .ReturnsAsync(null as ApplicationUser);
 
         // Act
-        var actual = () => _identityMediator.AuthenticateUserAsync(Fixture.Create<AuthenticateUserRequest>());
+        var actual = async () => await _identityMediator.AuthenticateUserAsync(Fixture.Create<AuthenticateUserRequest>());
 
         // Assert
         await actual.Should().ThrowAsync<AuthenticateUserException>();
@@ -48,7 +48,7 @@ public class IdentityOrchestratorTests : MediatorTestBase
             .ThrowsAsync(new AuthenticateUserException(user.UserName!));
 
         // Act
-        var actual = () => _identityMediator.AuthenticateUserAsync(Fixture.Create<AuthenticateUserRequest>());
+        var actual = async () => await _identityMediator.AuthenticateUserAsync(Fixture.Create<AuthenticateUserRequest>());
 
         // Assert
         await actual.Should().ThrowAsync<AuthenticateUserException>();

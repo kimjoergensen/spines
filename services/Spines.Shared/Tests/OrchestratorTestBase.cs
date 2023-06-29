@@ -9,7 +9,7 @@ using Spines.Shared.Mediators;
 /// <summary>
 /// Base class for Mediator tests.
 /// </summary>
-public class MediatorTestBase
+public class OrchestratorTestBase
 {
     protected Mock<IMediator> MediatorMock { get; } = new();
     protected Fixture Fixture { get; } = new();

@@ -10,5 +10,5 @@ public interface IUserOrchestrator
 {
 
     /// <inheritdoc cref="UserOrchestrator.RegisterUserAsync(RegisterUserRequest)"/>
-    Task<ApplicationUser?> RegisterUserAsync(RegisterUserRequest command);
+    ValueTask<ApplicationUser?> RegisterUserAsync(RegisterUserRequest command);
 }

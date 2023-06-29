@@ -23,7 +23,9 @@ public class AuthenticateUserQueryHandler : IRequestHandler<AuthenticateUserQuer
     private readonly AuthenticationOptions _options;
 
     public AuthenticateUserQueryHandler(
-        ILogger<AuthenticateUserQueryHandler> logger, SignInManager<ApplicationUser> signInManager, IOptions<AuthenticationOptions> options)
+        ILogger<AuthenticateUserQueryHandler> logger,
+        SignInManager<ApplicationUser> signInManager,
+        IOptions<AuthenticationOptions> options)
     {
         _logger = logger;
         _signInManager = signInManager;
@@ -35,7 +37,7 @@ public class AuthenticateUserQueryHandler : IRequestHandler<AuthenticateUserQuer
         var loginResult = await _signInManager.PasswordSignInAsync(request.User, request.Password, true, false);
         _logger.LogInformation("Login result for user '{user}' {result}.", request.User.UserName, loginResult.ToString());
 
-        if (!loginResult.Succeeded || loginResult.IsNotAllowed || loginResult.IsLockedOut)
+        if (!loginResult.Succeeded || loginResult.IsNotAllowed || loginResult.IsLockedOut || loginResult.RequiresTwoFactor)
             throw new AuthenticateUserException(request.User.UserName!);
 
         var token = GenerateToken(request.User);

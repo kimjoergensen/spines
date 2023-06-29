@@ -27,7 +27,7 @@ public class UserOrchestrator : IUserOrchestrator
     /// <param name="request">Login credentials for new user.</param>
     /// <returns>Newly registered <see cref="ApplicationUser"/>.</returns>
     /// <exception cref="UserRegistrationException"/>
-    public async Task<ApplicationUser?> RegisterUserAsync(RegisterUserRequest request)
+    public async ValueTask<ApplicationUser?> RegisterUserAsync(RegisterUserRequest request)
     {
         var registerUserCommand = new RegisterUserCommand { Email = request.Email, Password = request.Password };
         return await _mediator.InvokeAsync<ApplicationUser>(registerUserCommand);

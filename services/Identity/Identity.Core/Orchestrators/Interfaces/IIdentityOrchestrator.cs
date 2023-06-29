@@ -7,5 +7,5 @@ using Identity.Core.Orchestrators;
 public interface IIdentityOrchestrator
 {
     /// <inheritdoc cref="IdentityOrchestrator.AuthenticateUserAsync(AuthenticateUserRequest)"/>
-    Task<Token> AuthenticateUserAsync(AuthenticateUserRequest request);
+    ValueTask<Token> AuthenticateUserAsync(AuthenticateUserRequest request);
 }
