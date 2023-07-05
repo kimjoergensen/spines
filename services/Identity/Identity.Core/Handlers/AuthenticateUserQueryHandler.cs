@@ -63,4 +63,3 @@ public class AuthenticateUserQueryHandler : IRequestHandler<AuthenticateUserQuer
         return tokenHandler.CreateEncodedJwt(tokenDescriptor);
     }
 }
-

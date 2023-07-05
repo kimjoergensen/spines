@@ -5,19 +5,19 @@ using Identity.Core.Handlers;
 using Identity.Core.Models;
 using Identity.Core.Models.Queries;
 using Identity.Core.Options;
+using Identity.UnitTests.Handlers.Helpers;
 
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-public class AuthenticateUserQueryHandlerTest
+public class AuthenticateUserQueryHandlerTests
 {
     private readonly AuthenticateUserQueryHandler _handler;
-    private readonly Mock<SignInManager<ApplicationUser>> _mockSignInManager = MockSignInManager;
+    private readonly Mock<SignInManager<ApplicationUser>> _mockSignInManager = MockHelpers.SignInManager;
     private readonly Fixture _fixture = new();
 
-    public AuthenticateUserQueryHandlerTest()
+    public AuthenticateUserQueryHandlerTests()
     {
         var settings = new AuthenticationOptions
         {
@@ -110,23 +110,4 @@ public class AuthenticateUserQueryHandlerTest
         // Assert
         actual.Should().BeOfType<Token>();
     }
-
-    private static Mock<UserManager<ApplicationUser>> MockUserManager =>
-        new(Mock.Of<IUserStore<ApplicationUser>>(),
-            /* IOptions<IdentityOptions> optionsAccessor */null,
-            /* IPasswordHasher<TUser> passwordHasher */null,
-            /* IEnumerable<IUserValidator<TUser>> userValidators */null,
-            /* IEnumerable<IPasswordValidator<TUser>> passwordValidators */null,
-            /* ILookupNormalizer keyNormalizer */null,
-            /* IdentityErrorDescriber errors */null,
-            /* IServiceProvider services */null,
-            /* ILogger<UserManager<TUser>> logger */null);
-
-    private static Mock<SignInManager<ApplicationUser>> MockSignInManager =>
-        new(MockUserManager.Object,
-            /* IHttpContextAccessor contextAccessor */Mock.Of<IHttpContextAccessor>(),
-            /* IUserClaimsPrincipalFactory<TUser> claimsFactory */Mock.Of<IUserClaimsPrincipalFactory<ApplicationUser>>(),
-            /* IOptions<IdentityOptions> optionsAccessor */null,
-            /* ILogger<SignInManager<TUser>> logger */null,
-            /* IAuthenticationSchemeProvider schemes */null);
 }
