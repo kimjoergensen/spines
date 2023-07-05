@@ -1,5 +1,3 @@
-using Organization.API.Services;
-
 using ProtoBuf.Grpc.Server;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -22,8 +20,6 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 app.UseRouting();
 
-app.MapGrpcService<TimeService>();
-app.MapGrpcService<CalculatorService>();
 app.MapGet("/", () => "Communication with gRPC endpoints must be made through a gRPC client. To learn how to create a client, visit: https://go.microsoft.com/fwlink/?linkid=2086909");
 
 app.MapCodeFirstGrpcReflectionService();

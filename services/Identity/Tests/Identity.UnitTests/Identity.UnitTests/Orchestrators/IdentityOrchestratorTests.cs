@@ -9,16 +9,18 @@ using Identity.Core.Orchestrators.Interfaces;
 
 using Microsoft.Extensions.Logging;
 
-using Spines.Shared.Tests;
+using Spines.Shared.Mediators;
 
-public class IdentityOrchestratorTests : OrchestratorTestBase
+public class IdentityOrchestratorTests
 {
     private readonly IIdentityOrchestrator _identityMediator;
+    private readonly Mock<IMediator> _mockMediator = new();
+    private readonly Fixture _fixture = new();
 
     public IdentityOrchestratorTests()
     {
         var logger = Mock.Of<ILogger<IdentityOrchestrator>>();
-        _identityMediator = new IdentityOrchestrator(logger, MediatorMock.Object);
+        _identityMediator = new IdentityOrchestrator(logger, _mockMediator.Object);
     }
 
     #region AuthenticateUserAsync
@@ -26,11 +28,11 @@ public class IdentityOrchestratorTests : OrchestratorTestBase
     public async Task AuthenticateUserAsync_NotFoundException_ExceptionRethrown()
     {
         // Arrange
-        MediatorMock.Setup(x => x.InvokeAsync<ApplicationUser>(It.IsAny<GetUserQuery>()))
+        _mockMediator.Setup(x => x.InvokeAsync<ApplicationUser>(It.IsAny<GetUserQuery>()))
             .ReturnsAsync(null as ApplicationUser);
 
         // Act
-        var actual = async () => await _identityMediator.AuthenticateUserAsync(Fixture.Create<AuthenticateUserRequest>());
+        var actual = async () => await _identityMediator.AuthenticateUserAsync(_fixture.Create<AuthenticateUserRequest>());
 
         // Assert
         await actual.Should().ThrowAsync<AuthenticateUserException>();
@@ -40,15 +42,15 @@ public class IdentityOrchestratorTests : OrchestratorTestBase
     public async Task AuthenticateUserAsync_UserNotAuthenticated_ReturnsNull()
     {
         // Arrange
-        var user = Fixture.Create<ApplicationUser>();
-        MediatorMock.Setup(x => x.InvokeAsync<ApplicationUser>(It.IsAny<GetUserQuery>()))
+        var user = _fixture.Create<ApplicationUser>();
+        _mockMediator.Setup(x => x.InvokeAsync<ApplicationUser>(It.IsAny<GetUserQuery>()))
             .ReturnsAsync(user);
 
-        MediatorMock.Setup(x => x.InvokeAsync<Token>(It.IsAny<AuthenticateUserQuery>()))
+        _mockMediator.Setup(x => x.InvokeAsync<Token>(It.IsAny<AuthenticateUserQuery>()))
             .ThrowsAsync(new AuthenticateUserException(user.UserName!));
 
         // Act
-        var actual = async () => await _identityMediator.AuthenticateUserAsync(Fixture.Create<AuthenticateUserRequest>());
+        var actual = async () => await _identityMediator.AuthenticateUserAsync(_fixture.Create<AuthenticateUserRequest>());
 
         // Assert
         await actual.Should().ThrowAsync<AuthenticateUserException>();
@@ -58,17 +60,17 @@ public class IdentityOrchestratorTests : OrchestratorTestBase
     public async Task AuthenticateUserAsync_UserAuthenticated_ReturnsToken()
     {
         // Arrange
-        var user = Fixture.Create<ApplicationUser>();
-        var expected = Fixture.Create<Token>();
+        var user = _fixture.Create<ApplicationUser>();
+        var expected = _fixture.Create<Token>();
 
-        MediatorMock.Setup(x => x.InvokeAsync<ApplicationUser>(It.IsAny<GetUserQuery>()))
+        _mockMediator.Setup(x => x.InvokeAsync<ApplicationUser>(It.IsAny<GetUserQuery>()))
             .ReturnsAsync(user);
 
-        MediatorMock.Setup(x => x.InvokeAsync<Token>(It.IsAny<AuthenticateUserQuery>()))
+        _mockMediator.Setup(x => x.InvokeAsync<Token>(It.IsAny<AuthenticateUserQuery>()))
             .ReturnsAsync(expected);
 
         // Act
-        var actual = await _identityMediator.AuthenticateUserAsync(Fixture.Create<AuthenticateUserRequest>());
+        var actual = await _identityMediator.AuthenticateUserAsync(_fixture.Create<AuthenticateUserRequest>());
 
         // Assert
         actual.Should().BeEquivalentTo(expected);
