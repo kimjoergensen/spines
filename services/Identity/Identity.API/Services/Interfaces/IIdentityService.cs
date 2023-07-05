@@ -8,5 +8,12 @@ using Identity.Core.Models.Responses;
 [ServiceContract]
 public interface IIdentityService
 {
-    public ValueTask<AuthenticateUserResponse> Authenticate(AuthenticateUserRequest request);
+    /// <inheritdoc cref="IdentityService.Register(RegisterUserRequest)"/>
+    public ValueTask<AuthenticateUserResponse> Register(RegisterUserRequest request);
+
+    /// <inheritdoc cref="IdentityService.SignIn(AuthenticateUserRequest)"/>
+    public ValueTask<AuthenticateUserResponse> SignIn(AuthenticateUserRequest request);
+
+    /// <inheritdoc cref="IdentityService.SignOut(SignOutUserRequest)"/>
+    ValueTask SignOut(SignOutUserRequest request);
 }

@@ -35,7 +35,7 @@ public class RegisterUserCommandHandlerTests
         var actual = async () => await _handler.HandleAsync(command);
 
         // Assert
-        await actual.Should().ThrowAsync<UserRegistrationException>();
+        await actual.Should().ThrowAsync<RegisterUserException>();
     }
 
     [Fact]

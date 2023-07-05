@@ -37,7 +37,15 @@ internal class Mediator : IMediator
         // Resolve closed handler type.
         dynamic handler = Mediator.ResolveHandler<IRequest>(scope, typeof(IRequestHandler<>), request.GetType());
 
-        await HandleRequest(handler, request);
+        try
+        {
+            LogStart(handler);
+            await handler.HandleAsync((dynamic)request);
+        }
+        finally
+        {
+            LogFinish(handler);
+        }
     }
 
     /// <summary>
@@ -54,7 +62,15 @@ internal class Mediator : IMediator
         // Resolve closed handler type.
         dynamic handler = Mediator.ResolveHandler<IRequest>(scope, typeof(IRequestHandler<,>), request.GetType(), typeof(TResponse));
 
-        return await HandleRequest(handler, request);
+        try
+        {
+            LogStart(handler);
+            return await handler.HandleAsync((dynamic)request);
+        }
+        finally
+        {
+            LogFinish(handler);
+        }
     }
 
     private static dynamic ResolveHandler<IRequest>(IServiceScope scope, Type requestHandlerType, params Type[] genericTypes)
@@ -67,18 +83,6 @@ internal class Mediator : IMediator
         return scope.ServiceProvider.GetRequiredService(handlerClosedType);
     }
 
-    private async ValueTask<dynamic> HandleRequest(dynamic handler, IRequest request)
-    {
-        var handlerType = (Type)handler.GetType();
-
-        try
-        {
-            _logger.LogInformation("{handler}: Handling request.", handlerType.Name);
-            return await handler.HandleAsync((dynamic)request);
-        }
-        finally
-        {
-            _logger.LogInformation("{handler}: Finished request.", handlerType.Name);
-        }
-    }
+    private void LogStart(dynamic handler) => _logger.LogInformation("{handler}: Handling request.", (string)handler.GetType().Name);
+    private void LogFinish(dynamic handler) => _logger.LogInformation("{handler}: Finished request.", (string)handler.GetType().Name);
 }

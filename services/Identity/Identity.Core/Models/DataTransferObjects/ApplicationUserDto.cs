@@ -1,13 +1,12 @@
-﻿namespace Identity.Core.Models.Requests;
-
+﻿namespace Identity.Core.Models.DataTransferObjects;
 using System.Runtime.Serialization;
 
 [DataContract]
-public record AuthenticateUserRequest
+public class ApplicationUserDto
 {
     [DataMember(Order = 1)]
     public required string Email { get; set; }
 
     [DataMember(Order = 2)]
-    public required string Password { get; set; }
+    public required string Password { private get; set; }
 }

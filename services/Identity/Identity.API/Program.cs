@@ -31,7 +31,6 @@ builder.Services.Configure<AuthenticationOptions>(
 builder.Services.AddMediator(coreAssembly);
 
 builder.Services.AddScoped<IIdentityOrchestrator, IdentityOrchestrator>();
-builder.Services.AddScoped<IUserOrchestrator, UserOrchestrator>();
 
 // Additional configuration is required to successfully run gRPC on macOS.
 // For instructions on how to configure Kestrel and gRPC clients on macOS, visit https://go.microsoft.com/fwlink/?linkid=2099682
@@ -72,21 +71,27 @@ builder.Services.Configure<IdentityOptions>(options =>
 var authConfiguration = builder.Configuration.GetSection(AuthenticationOptions.Configuration).Get<AuthenticationOptions>()
     ?? throw new ApplicationException($"Missing {AuthenticationOptions.Configuration} values in appsettings.");
 
+var jwtSecret = Encoding.ASCII.GetBytes(authConfiguration.SigninKey);
+var tokenValidationParameters = new TokenValidationParameters
+{
+    ValidateIssuer = true,
+    ValidIssuer = authConfiguration.Issuer,
+    ValidateAudience = true,
+    ValidAudience = authConfiguration.Audience,
+    ValidateIssuerSigningKey = true,
+    IssuerSigningKey = new SymmetricSecurityKey(jwtSecret),
+    ValidateLifetime = false,
+};
+
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
     options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
     options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-}).AddJwtBearer(options => options.TokenValidationParameters = new TokenValidationParameters
+}).AddJwtBearer(options =>
 {
-    ValidIssuer = authConfiguration.Issuer,
-    ValidAudience = authConfiguration.Audience,
-    IssuerSigningKey = new SymmetricSecurityKey(
-            Encoding.ASCII.GetBytes(authConfiguration.SigninKey)),
-    ValidateIssuer = true,
-    ValidateAudience = true,
-    ValidateLifetime = false,
-    ValidateIssuerSigningKey = true
+    //options.SaveToken = true;
+    options.TokenValidationParameters = tokenValidationParameters;
 });
 
 builder.Services.AddAuthorization();
@@ -99,6 +104,15 @@ builder.Services.AddCodeFirstGrpcReflection();
 
 var app = builder.Build();
 
+if (app.Environment.IsDevelopment())
+{
+    app.UseDeveloperExceptionPage();
+
+    using var scope = app.Services.CreateScope();
+    var context = scope.ServiceProvider.GetRequiredService<IdentityDbContext>();
+    context.Database.Migrate();
+}
+
 // Configure the HTTP request pipeline.
 app.UseRouting();
 
@@ -106,16 +120,8 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapGrpcService<IdentityService>();
-app.MapGrpcService<UserService>();
 app.MapGet("/", () => "Communication with gRPC endpoints must be made through a gRPC client. To learn how to create a client, visit: https://go.microsoft.com/fwlink/?linkid=2086909");
 
 app.MapCodeFirstGrpcReflectionService();
-
-if (app.Environment.IsDevelopment())
-{
-    using var scope = app.Services.CreateScope();
-    var context = scope.ServiceProvider.GetRequiredService<IdentityDbContext>();
-    context.Database.Migrate();
-}
 
 app.Run();

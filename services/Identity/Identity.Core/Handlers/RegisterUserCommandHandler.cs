@@ -31,6 +31,6 @@ public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, A
         user.PasswordHash = _passwordHasher.HashPassword(user, request.Password);
         var result = await _userManager.CreateAsync(user);
         _logger.LogInformation("User created result for '{user}' {result}", request.Email, result.ToString());
-        return result.Succeeded ? user : throw new UserRegistrationException(request.Email, result.Errors);
+        return result.Succeeded ? user : throw new RegisterUserException(request.Email, result.Errors);
     }
 }
